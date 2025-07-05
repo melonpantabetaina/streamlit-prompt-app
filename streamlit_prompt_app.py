@@ -31,13 +31,14 @@ if st.button("🎲 お題をもらう"):
 if st.button("🚀 AIに送信") and user_prompt.strip():
     with st.spinner("AIが考え中..."):
         try:
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+            response = client.chat.completions.create(
+                model="gpt-4o",
                 messages=[
                     {"role": "system", "content": "あなたは親しみやすく面白いアシスタントです。"},
                     {"role": "user", "content": user_prompt}
                 ]
             )
+            
             ai_reply = response.choices[0].message.content
             st.success("✅ AIの返答はこちら！")
             st.write(ai_reply)
