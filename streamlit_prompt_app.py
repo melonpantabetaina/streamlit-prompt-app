@@ -26,6 +26,8 @@ if st.button("🎲 お題をもらう"):
     ]
     user_prompt = random.choice(examples)
     st.session_state["user_prompt"] = user_prompt
+    
+client = openai.OpenAI()
 
 # 入力があればAIに送信
 if st.button("🚀 AIに送信") and user_prompt.strip():
