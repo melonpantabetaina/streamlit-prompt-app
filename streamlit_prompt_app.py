@@ -8,7 +8,7 @@ import random
 openai.api_key = os.getenv("OPENAI_API_KEY") or "YOUR_API_KEY_HERE"
 
 st.set_page_config(page_title="AIと話そう！", page_icon="🤖")
-st.title("🤖 プロンプトでAIと話そう！")
+st.title("🤖 いろいろなプロンプトを試しておもしろいAI発言をつくろう！")
 st.write("プロンプト（AIへのお願いの言葉）を工夫して、どんな返事が返ってくるか試してみよう！")
 
 # お題ボタン（例題をすぐ使える）
