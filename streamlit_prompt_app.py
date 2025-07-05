@@ -4,19 +4,19 @@ import openai
 import os
 import random
 
-# OpenAI APIキーを設定（セキュアな場所で管理してください）
+# OpenAI APIキー設定（環境変数 or 手動入力）
 openai.api_key = os.getenv("OPENAI_API_KEY") or "YOUR_API_KEY_HERE"
+client = openai.OpenAI()
 
-st.set_page_config(page_title="AIと話そう！", page_icon="🤖")
-st.title("🤖 プロンプトを工夫して自分好みのAIをつくろう！")
-st.write("プロンプト（AIへのお願いの言葉）を工夫して、どんな返事が返ってくるか試してみよう！")
+st.set_page_config(page_title="プロンプト職人選手権", page_icon="🏆")
+st.title("🏆 プロンプト職人選手権")
+st.write("プロンプトを工夫して、AIから高評価な返答を引き出そう！")
 
-# お題ボタン（例題をすぐ使える）
-# セッション内に user_prompt がなければ初期化
+# セッションステートの初期化
 if "user_prompt" not in st.session_state:
     st.session_state["user_prompt"] = ""
 
-# ボタン：お題をもらう
+# 🎲 お題ガチャ
 if st.button("🎲 お題をもらう"):
     examples = [
         "宇宙人になりきって自己紹介して",
@@ -28,15 +28,14 @@ if st.button("🎲 お題をもらう"):
     ]
     st.session_state["user_prompt"] = random.choice(examples)
 
-# テキストエリア：セッションと同期
-user_prompt = st.text_area("📝 プロンプトを入力してね：", height=100, key="user_prompt")
-    
-client = openai.OpenAI()
+# プロンプト入力欄
+user_prompt = st.text_area("📝 AIへのお願い（プロンプト）を入力してみよう：", height=100, key="user_prompt")
 
-# 入力があればAIに送信
-if st.button("🚀 AIに送信") and user_prompt.strip():
+# 🚀 実行ボタン
+if st.button("🚀 AIに送信して評価を受けよう") and user_prompt.strip():
     with st.spinner("AIが考え中..."):
         try:
+            # AI返答生成
             response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[
@@ -44,13 +43,39 @@ if st.button("🚀 AIに送信") and user_prompt.strip():
                     {"role": "user", "content": user_prompt}
                 ]
             )
-            
             ai_reply = response.choices[0].message.content
-            st.success("✅ AIの返答はこちら！")
+
+            # AIによる自己評価
+            eval_prompt = f"""
+以下のAIの返答について、次の3つの観点で10点満点で採点し、コメントも添えてください。
+
+【評価観点】
+1. 創造性（どれだけユニークで想像力に富んでいるか）
+2. 面白さ（どれだけ笑いや興味を引くか）
+3. わかりやすさ（伝わりやすさ、表現の工夫）
+
+【返答】
+{ai_reply}
+"""
+            eval_response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {"role": "system", "content": "あなたは優秀な教育者として、公平に評価してください。"},
+                    {"role": "user", "content": eval_prompt}
+                ]
+            )
+            ai_eval = eval_response.choices[0].message.content
+
+            # 結果表示
+            st.success("🎉 AIの返答")
             st.write(ai_reply)
+
+            st.info("📊 AIによる自己採点")
+            st.markdown(ai_eval)
+
         except Exception as e:
             st.error(f"エラーが発生しました: {e}")
 
 # フッター
 st.markdown("---")
-st.caption("Developed for educational use ✨")
+st.caption("Powered by GPT-4o / Streamlit ✨ 教育目的で使用中")
