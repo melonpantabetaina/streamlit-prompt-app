@@ -12,7 +12,7 @@ st.title("🤖 プロンプトでAIと話そう！")
 st.write("プロンプト（AIへのお願いの言葉）を工夫して、どんな返事が返ってくるか試してみよう！")
 
 # プロンプト入力欄
-user_prompt = st.text_area("📝 プロンプトを入力してね：", height=100)
+# user_prompt = st.text_area("📝 プロンプトを入力してね：", height=100)
 
 # お題ボタン（例題をすぐ使える）
 # セッション内に user_prompt がなければ初期化
