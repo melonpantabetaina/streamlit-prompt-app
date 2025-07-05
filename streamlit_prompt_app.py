@@ -2,6 +2,7 @@
 import streamlit as st
 import openai
 import os
+import random
 
 # OpenAI APIキーを設定（セキュアな場所で管理してください）
 openai.api_key = os.getenv("OPENAI_API_KEY") or "YOUR_API_KEY_HERE"
