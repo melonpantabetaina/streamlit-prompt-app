@@ -24,20 +24,16 @@ if "user_prompt" not in st.session_state:
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
 
-# 🎲 お題ガチャ
-if st.button("🎲 お題をもらう"):
-    examples = [
-        "宇宙人になりきって自己紹介して",
-        "10歳の子でも安心して聞ける怖い話をして",
-        "関西弁でラーメンを紹介して",
-        "戦国武将がスマホを初めて使う話を書いて",
-        "やる気が出るように応援して",
-        "天気予報をテンション高くやって"
-    ]
-    st.session_state["user_prompt"] = random.choice(examples)
+# リセットボタン：チャット履歴をリセット
+if st.button("リセット"):
+    st.session_state["chat_history"] = []
+    st.session_state["user_prompt"] = ""
 
-# プロンプト入力欄
-user_prompt = st.text_area("📝 AIへのお願い（プロンプト）を入力してみよう：", height=100, key="user_prompt")
+# 1つ目のプロンプト入力欄（AIエージェントとのチャット）
+user_message = st.text_area("📝 AIとのチャットメッセージを入力：", height=100, key="user_message")
+
+# 2つ目のプロンプト入力欄（AIエージェントの返信を制御する）
+control_prompt = st.text_area("📝 AIの反応を制御するプロンプトを入力：", height=100, key="control_prompt")
 
 # チャット履歴の表示
 if st.session_state["chat_history"]:
@@ -45,23 +41,30 @@ if st.session_state["chat_history"]:
         st.markdown(f"**ユーザー**: {chat['user']}")
         st.markdown(f"**エージェント**: {chat['agent']}")
 
-# 🚀 実行ボタン
-if st.button("🚀 チャット送信") and user_prompt.strip():
+# 🚀 チャット送信ボタン
+if st.button("🚀 チャット送信") and user_message.strip():
     with st.spinner("AIが考え中..."):
         try:
-            # ユーザーとエージェントのチャット履歴を保持
-            st.session_state["chat_history"].append({"user": user_prompt, "agent": ""})
+            # ユーザーのメッセージを履歴に追加
+            st.session_state["chat_history"].append({"user": user_message, "agent": ""})
+
+            # ユーザーのメッセージを含めてエージェントへのプロンプトを作成
+            prompt_for_ai = user_message
+
+            # 制御プロンプトが入力されていれば、それをAIに伝える
+            if control_prompt.strip():
+                prompt_for_ai = control_prompt + "\n" + user_message
 
             # AI返答生成
             response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[{"role": "system", "content": "あなたは親しみやすく面白いアシスタントです。"}] + [
                     {"role": "user", "content": chat["user"]} for chat in st.session_state["chat_history"]
-                ] + [{"role": "user", "content": user_prompt}]
+                ] + [{"role": "user", "content": prompt_for_ai}]
             )
             ai_reply = response.choices[0].message.content
 
-            # エージェントの返答を更新
+            # エージェントの返答を履歴に追加
             st.session_state["chat_history"][-1]["agent"] = ai_reply
 
             # 結果表示
