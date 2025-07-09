@@ -29,17 +29,19 @@ if st.button("リセット"):
     st.session_state["chat_history"] = []
     st.session_state["user_prompt"] = ""
 
-# 1つ目のプロンプト入力欄（AIエージェントとのチャット）
-user_message = st.text_area("📝 AIとのチャットメッセージを入力：", height=100, key="user_message")
-
 # 2つ目のプロンプト入力欄（AIエージェントの返信を制御する）
 control_prompt = st.text_area("📝 AIの反応を制御するプロンプトを入力：", height=100, key="control_prompt")
+
+# 1つ目のプロンプト入力欄（AIエージェントとのチャット）
+user_message = st.text_area("📝 AIとのチャットメッセージを入力：", height=100, key="user_message")
 
 # チャット履歴の表示
 if st.session_state["chat_history"]:
     for chat in st.session_state["chat_history"]:
-        st.markdown(f"**ユーザー**: {chat['user']}")
-        st.markdown(f"**エージェント**: {chat['agent']}")
+        # ユーザーのメッセージ表示
+        st.markdown(f"**👤 ユーザー**: {chat['user']}")
+        # エージェントのメッセージ表示
+        st.markdown(f"**🤖 エージェント**: {chat['agent']}")
 
 # 🚀 チャット送信ボタン
 if st.button("🚀 チャット送信") and user_message.strip():
