@@ -7,7 +7,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY") or "YOUR_API_KEY_HERE"
 client = openai.OpenAI()
 
 # アクセス許可フラグ（Trueの場合、誰でもアクセス可能）
-allow_access = False  # ここを変更してアクセス制御
+allow_access = True  # ここを変更してアクセス制御
 
 if not allow_access:
     st.warning("アクセスが許可されていません。")
